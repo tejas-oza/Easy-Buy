@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/index.js"
   },
   "keywords": [
     "Node.js",
@@ -15,5 +15,13 @@
   ],
   "author": "",
   "license": "ISC",
-  "description": "A backend for the Easy-Buy Ecommerce Project."
+  "description": "A backend for the Easy-Buy Ecommerce Project.",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
 }
