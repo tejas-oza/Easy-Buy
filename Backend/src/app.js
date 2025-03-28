@@ -1,7 +1,22 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import { errorHandler } from "./middlewares/error.middlewares.js";
+import {
+  apiRateLimiter,
+  authRateLimiter,
+} from "./middlewares/rateLimitter.middlewares.js";
 
 const app = express();
+
+// api rate limiter
+app.use("/api", apiRateLimiter);
+
+// auth rate limiter
+app.use("/api/v1/users/login", authRateLimiter);
+app.use("/api/v1/users/register", authRateLimiter);
+
+// security middleware
 
 app.use(
   cors({
@@ -15,5 +30,14 @@ app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
 app.use(express.static("public/temp"));
+
+app.use(cookieParser());
+
+// import routes
+import userRouter from "./routes/user.routes.js";
+
+app.use("/api/v1/users", userRouter);
+
+app.use(errorHandler);
 
 export { app };
