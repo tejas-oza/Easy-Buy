@@ -35,6 +35,85 @@ const addBrand = asyncHandler(async (req, res) => {
     );
 });
 
+const getAllBrands = asyncHandler(async (req, res) => {
+  const { search } = req.query;
+
+  let filter = {};
+
+  if (search) {
+    filter = {
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { $text: { $search: search } },
+      ],
+    };
+  }
+  const allBrands = await Brand.find(filter);
+
+  if (!allBrands || allBrands.length <= 0) {
+    throw new ApiError(404, "Brands not found.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { Brands: allBrands },
+        "Fetched all brands successfully."
+      )
+    );
+});
+
+const getBrandById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(400, "Brand id is not valid.");
+  }
+
+  const brand = await Brand.findById(id).select("name");
+
+  if (!brand) {
+    throw new ApiError(404, "Brnad not found.");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { brand }, "Brand fetched successfully."));
+});
+
+const updateBrand = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(400, "Brand id is not valid.");
+  }
+
+  const updatedBrand = await Brand.findByIdAndUpdate(
+    id,
+    {
+      $set: {
+        name: name,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!updatedBrand) {
+    throw new ApiError(404, "Brand not found.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { updatedBrand }, "Brnad updated successfully.")
+    );
+});
+
 const deleteBrand = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -67,4 +146,4 @@ const deleteBrand = asyncHandler(async (req, res) => {
     );
 });
 
-export { addBrand, deleteBrand };
+export { addBrand, getAllBrands, getBrandById, updateBrand, deleteBrand };

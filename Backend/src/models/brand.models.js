@@ -19,4 +19,6 @@ const brandSchema = new Schema(
   }
 );
 
+brandSchema.index({ name: "text" });
+
 export const Brand = mongoose.model("Brand", brandSchema);
