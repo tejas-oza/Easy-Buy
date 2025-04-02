@@ -87,14 +87,6 @@ const productSchema = new Schema(
       required: [true, "Return policy required."],
     },
 
-    variants: [
-      {
-        color: String,
-        size: String,
-        price: Number,
-      },
-    ],
-
     tags: [
       {
         type: String,
@@ -125,4 +117,4 @@ productSchema.virtual("finalPrice").get(function () {
 
 productSchema.index({ name: "text", description: "text", tags: "text" });
 
-export const PRoduct = mongoose.model("Product", productSchema);
+export const Product = mongoose.model("Product", productSchema);
