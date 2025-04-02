@@ -31,28 +31,83 @@ const createCategory = asyncHandler(async (req, res) => {
     );
 });
 
-// const updateCategory = asyncHandler(async (req, res) => {
-//   const { id } = req.params;
-//   const { name } = req.body;
+const getAllCategories = asyncHandler(async (req, res) => {
+  const { search } = req.query;
 
-//   if (!mongoose.Types.ObjectId.isValid(id)) {
-//     throw new ApiError(400, "Invalid category ID.");
-//   }
+  let filter = {};
 
-//   const category = await Category.findByIdAndUpdate(
-//     id,
-//     {
-//       $set: {
-//         name: name,
-//       },
-//     },
-//     { new: true }
-//   );
+  if (search) {
+    filter = {
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { $text: { $search: search } },
+      ],
+    };
+  }
 
-//   return res
-//     .status(200)
-//     .json(new ApiResponse(200, category, `Category updated successfully.`));
-// });
+  const allCategories = await Category.find(filter);
+
+  if (!allCategories || allCategories.length <= 0) {
+    throw new ApiError(404, "No Category found.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { Categories: allCategories },
+        "All categories fetched successfully."
+      )
+    );
+});
+
+const getCategoryById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(400, "Invalid category ID.");
+  }
+
+  const category = await Category.findById(id);
+
+  if (!category) {
+    throw new ApiError(404, "Category not found.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { category }, "Category retrived successfully.")
+    );
+});
+
+const updateCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(400, "Invalid category ID.");
+  }
+
+  const category = await Category.findByIdAndUpdate(
+    id,
+    {
+      $set: {
+        name: name,
+      },
+    },
+    { new: true }
+  );
+
+  if (!category) {
+    throw new ApiError(404, "Category not found.");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, category, `Category updated successfully.`));
+});
 
 const deleteCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -80,4 +135,10 @@ const deleteCategory = asyncHandler(async (req, res) => {
     );
 });
 
-export { createCategory, deleteCategory };
+export {
+  createCategory,
+  getAllCategories,
+  getCategoryById,
+  updateCategory,
+  deleteCategory,
+};

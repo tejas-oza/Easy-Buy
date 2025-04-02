@@ -35,12 +35,12 @@ app.use(cookieParser());
 
 // import routes
 import userRouter from "./routes/user.routes.js";
-import categoryRouter from "./routes/category.routes.js";
 import brandRouter from "./routes/brand.routes.js";
+import categoryRouter from "./routes/category.routes.js";
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/brands", brandRouter);
+app.use("/api/v1/categories", categoryRouter);
 
 app.use(errorHandler);
 
