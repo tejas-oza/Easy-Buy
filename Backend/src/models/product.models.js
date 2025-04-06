@@ -26,16 +26,35 @@ const productSchema = new Schema(
       ],
     },
 
+    // category: {
+    //   categoryId: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "Category",
+    //     required: true,
+    //     index: true,
+    //   },
+    //   name: {
+    //     type: String,
+    //     required: true,
+    //     index: true,
+    //   },
+    // },
+
     category: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
+      type: String,
       required: true,
       index: true,
     },
 
+    // brand: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "Brand",
+    //   required: true,
+    //   index: true,
+    // },
+
     brand: {
-      type: Schema.Types.ObjectId,
-      ref: "Brand",
+      type: String,
       required: true,
       index: true,
     },
@@ -60,6 +79,18 @@ const productSchema = new Schema(
     },
 
     images: [
+      {
+        type: String,
+      },
+    ],
+
+    colours: [
+      {
+        type: String,
+      },
+    ],
+
+    sizes: [
       {
         type: String,
       },
@@ -102,6 +133,12 @@ const productSchema = new Schema(
         ref: "Review",
       },
     ],
+
+    isPublished: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
   },
   {
     timestamps: true,
@@ -115,6 +152,12 @@ productSchema.virtual("finalPrice").get(function () {
   return this.price - (this.price * this.discount) / 100;
 });
 
-productSchema.index({ name: "text", description: "text", tags: "text" });
+productSchema.index({
+  name: "text",
+  description: "text",
+  tags: "text",
+  category: "text",
+  brand: "text",
+});
 
 export const Product = mongoose.model("Product", productSchema);

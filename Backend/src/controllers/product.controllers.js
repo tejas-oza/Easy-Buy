@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Product } from "../models/product.models.js";
 import { Category } from "../models/category.models.js";
 import { Brand } from "../models/brand.models.js";
+import { Review } from "../models/review.models.js";
 import mongoose from "mongoose";
 import fs from "fs";
 
@@ -21,6 +22,10 @@ const createProduct = asyncHandler(async (req, res) => {
     shippingCost,
     returnPolicy,
     warranty,
+    dimensions,
+    tags,
+    colours,
+    sizes,
   } = req.body;
 
   if (
@@ -74,17 +79,23 @@ const createProduct = asyncHandler(async (req, res) => {
   }
 
   let productImages = req.files.map((file) => file.path);
-
   let productDimensions = {};
-
   let productTags = [];
-
+  let productColours = [];
+  let productSizes = [];
   try {
-    if (req.body.dimensions) {
-      productDimensions = JSON.parse(req.body.dimensions);
+    if (dimensions) {
+      productDimensions = JSON.parse(dimensions);
     }
-    if (req.body.tags) {
-      productTags = JSON.parse(req.body.tags);
+    if (tags) {
+      productTags = JSON.parse(tags);
+    }
+
+    if (colours) {
+      productColours = JSON.parse(colours);
+    }
+    if (sizes) {
+      productSizes = JSON.parse(sizes);
     }
   } catch (error) {
     throw new ApiError(
@@ -97,12 +108,14 @@ const createProduct = asyncHandler(async (req, res) => {
     name,
     slug,
     description,
-    category,
-    brand,
+    category: existingCategory?.name,
+    brand: existingBrand?.name,
     price,
     discount,
     stock,
     weight,
+    colours: productColours,
+    sizes: productSizes,
     images: productImages,
     dimensions: productDimensions,
     shippingCost,
@@ -124,28 +137,65 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const getAllProducts = asyncHandler(async (req, res) => {
-  let { limit = 10, page = 1, search } = req.query;
+  let {
+    isPublished = true,
+    limit = 10,
+    page = 1,
+    search,
+    sortValue = "des",
+    minPrice,
+    maxPrice,
+    category,
+    brand,
+  } = req.query;
 
   page = parseInt(page, 10) || 1;
   limit = parseInt(limit, 10) || 10;
   let skip = (page - 1) * limit;
 
-  let filter = {};
+  let filter = {
+    isPublished,
+  };
 
+  // filter by search
   if (search) {
     filter = { $text: { $search: search } };
   }
 
+  // sort by asc or des
+  let sort = {};
+
+  if (sortValue === "asc") {
+    sort = { createdAt: 1 };
+  } else if (sortValue === "des") {
+    sort = { createdAt: -1 };
+  }
+
+  // filter by minPrice and maxPrice
+  if (minPrice || maxPrice) {
+    filter.price = {};
+    if (minPrice) filter.price.$gte = Number(minPrice);
+    if (maxPrice) filter.price.$lte = Number(maxPrice);
+  }
+
+  // sort by single category or multiple categories
+  if (category) {
+    const categories = category.split(",").map((cat) => cat.trim());
+    filter.category = { $in: categories };
+  }
+
+  if (brand) {
+    const brands = brand.split(",").map((b) => b.trim());
+
+    filter.brand = { $in: brands };
+  }
+
   const [products, totalProducts] = await Promise.all([
-    Product.find(filter)
-      .limit(limit)
-      .skip(skip)
-      .sort({ createdAt: -1 })
-      .populate("category brand", "name"),
+    Product.find(filter).limit(limit).skip(skip).sort(sort),
     Product.countDocuments(filter),
   ]);
 
-  if (!products || !products.length === 0) {
+  if (!products || products.length <= 0) {
     throw new ApiError(404, "No products found.");
   }
 
@@ -159,6 +209,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
         pagination: {
           totalProducts,
           totalPages,
+          currentPage: page,
           hasNextPage: page < totalPages,
           hasPrevPage: page > 1,
         },
@@ -168,6 +219,58 @@ const getAllProducts = asyncHandler(async (req, res) => {
   );
 });
 
+const getNewArrivals = asyncHandler(async (req, res) => {
+  const products = await Product.find().sort({ createdAt: -1 }).limit(8);
+
+  if (!products || product.length <= 0) {
+    throw new ApiError(404, "Products not found.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { products },
+        "New arrival products retrived successfully."
+      )
+    );
+});
+
+const getSimilarProducts = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(400, "Product id is not valid.");
+  }
+
+  const product = await Product.findById(id).select("name category brand tags");
+
+  if (!product) {
+    throw new ApiError(404, "Product not found.");
+  }
+
+  const similarProducts = await Product.find({
+    _id: { $ne: id },
+    isPublished: true,
+    category: product?.category,
+  }).limit(4);
+
+  if (!similarProducts || similarProducts.length <= 0) {
+    throw new ApiError(404, "No similar products found.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { similarProducts },
+        "Similar products fetched successfully."
+      )
+    );
+});
+
 const getProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -175,7 +278,7 @@ const getProductById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please provide valid product ID.");
   }
 
-  const product = await Product.findById(id).populate("category brand", "name");
+  const product = await Product.findById(id);
 
   if (!product) {
     throw new ApiError(404, "Product not found.");
@@ -197,6 +300,14 @@ const updateProductDetails = asyncHandler(async (req, res) => {
   // Ensure tags are unique if updating
   if (updateFields.tags && Array.isArray(updateFields.tags)) {
     updateFields.tags = [...new Set(updateFields.tags)];
+  }
+
+  if (updateFields.colours && Array.isArray(updateFields.colours)) {
+    updateFields.colours = [...new Set(updateFields.colours)];
+  }
+
+  if (updateFields.sizes && Array.isArray(updateFields.sizes)) {
+    updateFields.sizes = [...new Set(updateFields.sizes)];
   }
 
   // Handle dimensions update properly
@@ -316,6 +427,8 @@ const deleteProduct = asyncHandler(async (req, res) => {
     );
   }
 
+  await Review.deleteMany({ product: id });
+
   return res
     .status(200)
     .json(
@@ -330,6 +443,8 @@ const deleteProduct = asyncHandler(async (req, res) => {
 export {
   createProduct,
   getAllProducts,
+  getNewArrivals,
+  getSimilarProducts,
   getProductById,
   updateProductDetails,
   deleteProduct,

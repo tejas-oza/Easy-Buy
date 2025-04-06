@@ -5,7 +5,9 @@ import {
   createProduct,
   deleteProduct,
   getAllProducts,
+  getNewArrivals,
   getProductById,
+  getSimilarProducts,
   updateProductDetails,
   updateProductImages,
 } from "../controllers/product.controllers.js";
@@ -23,7 +25,11 @@ router
 
 router.route("/all-products").get(getAllProducts);
 
+router.route("/new-arrivals").get(getNewArrivals);
+
 router.route("/:id").get(getProductById);
+
+router.route("/similar-products/:id").get(getSimilarProducts);
 
 router
   .route("/update/:id")
