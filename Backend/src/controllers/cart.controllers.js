@@ -6,7 +6,7 @@ import { Product } from "../models/product.models.js";
 import mongoose from "mongoose";
 
 const addToCart = asyncHandler(async (req, res) => {
-  const { id, quantity } = req.body;
+  const { id, quantity, color, size } = req.body;
   const user = req.user?._id;
 
   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
@@ -27,7 +27,16 @@ const addToCart = asyncHandler(async (req, res) => {
   if (!cart) {
     cart = await Cart.create({
       userId: user,
-      cartItems: [{ productId: id, quantity, price: finalPrice }],
+      cartItems: [
+        {
+          productId: id,
+          name: product?.name,
+          quantity,
+          price: finalPrice,
+          color: color,
+          size: size,
+        },
+      ],
       totalPrice: quantity * finalPrice,
     });
   } else {
@@ -38,7 +47,14 @@ const addToCart = asyncHandler(async (req, res) => {
     if (productIndex > -1) {
       cart.cartItems[productIndex].quantity += quantity;
     } else {
-      cart.cartItems.push({ productId: id, quantity, price: finalPrice });
+      cart.cartItems.push({
+        productId: id,
+        name: product?.name,
+        quantity,
+        price: finalPrice,
+        color: color,
+        size: size,
+      });
     }
 
     cart.totalPrice = cart.cartItems.reduce(
