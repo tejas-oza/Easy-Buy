@@ -17,11 +17,11 @@ router.route("/:id").get(getReviewByProduct);
 router.route("/").get(verifyJWT, authorizeRoles("customer"), getReviewByUser);
 
 router
-  .route("/update/:id")
+  .route("/:id/update")
   .put(verifyJWT, authorizeRoles("customer"), updateReview);
 
 router
-  .route("/delete/:id")
+  .route("/:id/delete")
   .delete(verifyJWT, authorizeRoles("customer"), deletereview);
 
 export default router;
