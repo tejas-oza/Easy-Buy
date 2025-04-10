@@ -29,14 +29,14 @@ router.route("/new-arrivals").get(getNewArrivals);
 
 router.route("/:id").get(getProductById);
 
-router.route("/similar-products/:id").get(getSimilarProducts);
+router.route("/:id/similar-products").get(getSimilarProducts);
 
 router
-  .route("/update/:id")
+  .route("/:id/update")
   .put(verifyJWT, authorizeRoles("admin"), updateProductDetails);
 
 router
-  .route("/update-images/:id")
+  .route("/:id/update-images")
   .put(
     verifyJWT,
     authorizeRoles("admin"),
@@ -45,7 +45,7 @@ router
   );
 
 router
-  .route("/delete/:id")
+  .route("/:id/delete")
   .delete(verifyJWT, authorizeRoles("admin"), deleteProduct);
 
 export default router;

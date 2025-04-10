@@ -222,7 +222,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 const getNewArrivals = asyncHandler(async (req, res) => {
   const products = await Product.find().sort({ createdAt: -1 }).limit(8);
 
-  if (!products || product.length <= 0) {
+  if (!products || products.length <= 0) {
     throw new ApiError(404, "Products not found.");
   }
 
