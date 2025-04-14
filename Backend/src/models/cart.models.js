@@ -7,6 +7,11 @@ const cartItemSchema = new Schema(
       ref: "Product",
       required: true,
     },
+    images: [
+      {
+        type: String,
+      },
+    ],
     name: {
       type: String,
     },

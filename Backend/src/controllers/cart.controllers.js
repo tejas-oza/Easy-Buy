@@ -30,6 +30,7 @@ const addToCart = asyncHandler(async (req, res) => {
       cartItems: [
         {
           productId: id,
+          images: [...product?.images],
           name: product?.name,
           quantity,
           price: finalPrice,
@@ -49,6 +50,7 @@ const addToCart = asyncHandler(async (req, res) => {
     } else {
       cart.cartItems.push({
         productId: id,
+        images: [...product?.images],
         name: product?.name,
         quantity,
         price: finalPrice,
