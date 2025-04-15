@@ -37,4 +37,5 @@ router
 router
   .route("/:id/delete")
   .delete(verifyJWT, authorizeRoles("admin"), deleteOrder);
+
 export default router;

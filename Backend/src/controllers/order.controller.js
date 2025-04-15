@@ -148,46 +148,58 @@ const cancleOrder = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Provide valid order ID.");
   }
 
-  const cancledOrder = await Order.findByIdAndUpdate(
-    id,
-    {
-      $set: {
-        orderStatus: "cancelled",
-      },
-    },
-    {
-      new: true,
-    }
-  );
+  // const cancledOrder = await Order.findByIdAndUpdate(
+  //   id,
+  //   {
+  //     $set: {
+  //       orderStatus: "cancelled",
+  //       isCancelled: true,
+  //       cancelledDate: new Date(),
+  //     },
+  //   },
+  //   {
+  //     new: true,
+  //   }
+  // );
 
-  if (!cancledOrder) {
-    throw new ApiError(
-      500,
-      "Something went wrong while cancling the order. Please try again later."
-    );
+  const order = await Order.findById(id);
+
+  if (!order) {
+    throw new ApiError(404, "Order not found.");
   }
 
-  for (const item of cancledOrder.orderItems) {
-    const product = await Product.findById(item?.productId);
+  if (order.orderStatus === "delivered" || order.orderStatus === "cancelled") {
+    throw new ApiError(
+      400,
+      "Delivered or cancelled order cannot be cancelled. You can still return the products within 7 working days."
+    );
+  } else {
+    order.orderStatus = "cancelled";
+    order.isCancelled = true;
+    order.cancelledDate = new Date();
 
-    if (product) {
-      product.stock += item.quantity;
+    await order.save();
+
+    for (const item of order.orderItems) {
+      const product = await Product.findById(item?.productId);
+
+      if (product) {
+        product.stock += item.quantity;
+      }
+
+      await product.save();
     }
-
-    await product.save();
   }
 
   return res
     .status(200)
-    .json(
-      new ApiResponse(200, { cancledOrder }, "Order cancelled successfully.")
-    );
+    .json(new ApiResponse(200, { order }, "Order cancelled successfully."));
 });
 
 // admin controllers
 
 const getAllOrders = asyncHandler(async (req, res) => {
-  const allOrders = await Order.find({});
+  const allOrders = await Order.find();
 
   if (!allOrders) {
     throw new ApiError(404, "No order is yet confirmed.");
@@ -269,6 +281,8 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   // Auto-update payment status if needed
   if (nextStatus === "delivered") {
     order.paymentStatus = "paid";
+    order.isDelivered = true;
+    order.delivaryDate = new Date();
   }
 
   await order.save();
