@@ -28,7 +28,7 @@ const placeOrder = asyncHandler(async (req, res) => {
       isActive: true,
     });
 
-    if (!coupon) {
+    if (!coupon || !coupon.isActive) {
       throw new ApiError(404, "Invalid or expired coupon.");
     }
 
