@@ -220,53 +220,20 @@ const getAllUsers = asyncHandler(async (req, res) => {
     };
   }
 
-  const users = await User.find(filter)
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 })
-    .select("-password -refreshToken");
+  const [users, totalUsers] = await Promise.all([
+    User.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .select("-password -refreshToken"),
+    User.countDocuments(filter),
+  ]);
 
   if (!users.length) {
     throw new ApiError(404, "No users found.");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, { users }, "Users retrieved successfully."));
-});
-
-const filterUsers = asyncHandler(async (req, res) => {
-  let { search = "", page = 1, limit = 10 } = req.query;
-
-  // Convert page and limit to numbers and ensure they are positive
-  page = Math.max(parseInt(page, 10) || 1, 1);
-  limit = Math.max(parseInt(limit, 10) || 10, 1);
-
-  const skip = (page - 1) * limit;
-  const query = {};
-
-  if (search.trim()) {
-    query.$or = [
-      { username: { $regex: search, $options: "i" } },
-      { fullName: { $regex: search, $options: "i" } },
-      { email: { $regex: search, $options: "i" } },
-    ];
-  }
-
-  const [users, totalUsers] = await Promise.all([
-    User.find(query)
-      .select("-password -refreshToken")
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 }),
-    User.countDocuments(query),
-  ]);
-
-  if (!users || users.length === 0) {
-    throw new ApiError(404, "No user found.");
-  }
-
-  const totalPages = Math.ceil(totalUsers / limit);
+  let totalPages = Math.ceil(totalUsers / limit);
 
   return res.status(200).json(
     new ApiResponse(
@@ -275,16 +242,68 @@ const filterUsers = asyncHandler(async (req, res) => {
         users,
         pagination: {
           totalUsers,
+          totalPages,
           currentPage: page,
-          totalPages: totalPages,
           hasNextPage: page < totalPages,
           hasPrevPage: page > 1,
         },
       },
-      "get all users."
+      "Users retrieved successfully."
     )
   );
 });
+
+// ! We don't need it cause we added the filter logic in getAllUsers controllers itself
+// const filterUsers = asyncHandler(async (req, res) => {
+//   let { search = "", page = 1, limit = 10 } = req.query;
+
+//   // Convert page and limit to numbers and ensure they are positive
+//   page = Math.max(parseInt(page, 10) || 1, 1);
+//   limit = Math.max(parseInt(limit, 10) || 10, 1);
+
+//   const skip = (page - 1) * limit;
+//   const query = {};
+
+//   if (search.trim()) {
+//     query.$or = [
+//       { username: { $regex: search, $options: "i" } },
+//       { fullName: { $regex: search, $options: "i" } },
+//       { email: { $regex: search, $options: "i" } },
+//     ];
+//   }
+
+//   const [users, totalUsers] = await Promise.all([
+//     User.find(query)
+//       .select("-password -refreshToken")
+//       .skip(skip)
+//       .limit(limit)
+//       .sort({ createdAt: -1 }),
+//     User.countDocuments(query),
+//   ]);
+
+//   if (!users || users.length === 0) {
+//     throw new ApiError(404, "No user found.");
+//   }
+
+//   const totalPages = Math.ceil(totalUsers / limit);
+
+//   return res.status(200).json(
+//     new ApiResponse(
+//       200,
+//       {
+//         users,
+//         pagination: {
+//           totalUsers,
+//           currentPage: page,
+//           totalPages: totalPages,
+//           hasNextPage: page < totalPages,
+//           hasPrevPage: page > 1,
+//         },
+//       },
+//       "get all users."
+//     )
+//   );
+// });
 
 const getUserById = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -534,5 +553,4 @@ export {
   deleteAdress,
   deleteCustomerAccount,
   deleteMyAccount,
-  filterUsers,
 };

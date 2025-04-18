@@ -5,7 +5,6 @@ import {
   deleteAdress,
   deleteCustomerAccount,
   deleteMyAccount,
-  filterUsers,
   getAllUsers,
   getLoggedInUser,
   getUserById,
@@ -40,7 +39,6 @@ router.route("/delete-my-account").delete(verifyJWT, deleteMyAccount);
 
 // admin only routes
 router.route("/all-users").get(verifyJWT, authorizeRoles("admin"), getAllUsers);
-router.route("/filter").get(verifyJWT, authorizeRoles("admin"), filterUsers);
 router.route("/:id").get(verifyJWT, authorizeRoles("admin"), getUserById);
 router
   .route("/delete-customer-account/:id")
