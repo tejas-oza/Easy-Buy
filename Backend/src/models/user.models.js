@@ -89,8 +89,16 @@ const userSchema = new Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+
+// ?Quick note: - if you have index: true in your schema defination then you cannot add the below lines otherwise it will an error
+// userSchema.index({ username: 1 });
+// userSchema.index({ email: 1 });
+
+userSchema.index({ username: "text", email: "text", fullName: "text" });
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();

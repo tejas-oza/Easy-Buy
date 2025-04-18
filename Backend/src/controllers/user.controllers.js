@@ -202,9 +202,29 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({ _id: { $ne: req.user._id } }).select(
-    "-password -refreshToken"
-  );
+  let { search = "", page = 1, limit = 1 } = req.query;
+
+  page = Math.max(parseInt(page, 10) || 1, 1);
+  limit = Math.max(parseInt(limit, 10) || 10, 1);
+  const skip = (page - 1) * limit;
+
+  let filter = {
+    _id: { $ne: req.user._id },
+  };
+
+  if (search) {
+    filter = {
+      $text: {
+        $search: search,
+      },
+    };
+  }
+
+  const users = await User.find(filter)
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 })
+    .select("-password -refreshToken");
 
   if (!users.length) {
     throw new ApiError(404, "No users found.");
