@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isDarkMode: JSON.parse(localStorage.getItem("isDarkMode")) || false,
+  isMobileMenuOpen:
+    JSON.parse(localStorage.getItem("isMobileMenuOpen")) || false,
 };
 
 const globalSlice = createSlice({
@@ -12,8 +14,13 @@ const globalSlice = createSlice({
       state.isDarkMode = action.payload;
       localStorage.setItem("isDarkMode", JSON.stringify(action.payload));
     },
+
+    toggleMobileMenu: (state, action) => {
+      state.isMobileMenuOpen = action.payload;
+      localStorage.setItem("isMobileMenuOpen", JSON.stringify(action.payload));
+    },
   },
 });
 
-export const { toggleDarkMode } = globalSlice.actions;
+export const { toggleDarkMode, toggleMobileMenu } = globalSlice.actions;
 export default globalSlice.reducer;

@@ -1,8 +1,15 @@
+import { useSelector } from "react-redux";
+import NavbarContainer from "./components/Navbar/NavbarContainer";
+
 function App() {
+  const isDarkMode = useSelector((state) => state.global.isDarkMode);
+
   return (
     <>
-      <div className="w-full h-1/2 p-10 flex items-center justify-center bg-red-200">
-        <h1 className="text-5xl text-violet-400">Hello World!</h1>
+      <div
+        className={`${isDarkMode && "dark"} w-[100vw] dark:text-neutral-50 `}
+      >
+        <NavbarContainer />
       </div>
     </>
   );
