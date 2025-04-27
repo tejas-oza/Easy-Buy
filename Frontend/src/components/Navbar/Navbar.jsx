@@ -1,7 +1,8 @@
 import React from "react";
 import { LuMenu, LuMoon, LuSunMedium, LuX } from "react-icons/lu";
-import NavbarBrand from "./NavbarBrand";
 import NavbarMenu from "./NavbarMenu";
+import Button from "../ui/Button";
+import viteLogo from "../../assets/vite.svg";
 
 const Navbar = ({
   handleDarkMode,
@@ -10,26 +11,40 @@ const Navbar = ({
   isMobileMenuOpen,
 }) => {
   return (
-    <nav className="w-full bg-neutral-100 dark:bg-neutral-800 p-5 flex items-center justify-between border-b border-b-neutral-200">
-      <NavbarBrand />
+    <nav className="w-full flex items-center justify-between shadow px-5 py-3 bg-white dark:bg-zinc-950 fixed top-0  dark:border-b dark:border-b-zinc-800">
+      <Logo />
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <NavbarMenu />
-        <button
+
+        <Button
+          className={"shadow-none"}
+          variant={"base"}
+          size={"icon"}
           onClick={() => handleDarkMode()}
-          className="cursor-pointer p-1 border-2 border-neutral-200 rounded-md dark:border-neutral-600 "
         >
           {isDarkMode ? <LuMoon size={20} /> : <LuSunMedium size={20} />}
-        </button>
+        </Button>
 
-        <button
+        <Button
+          className={"shadow-none md:hidden"}
+          variant={"base"}
+          size={"icon"}
           onClick={() => handleMobileMenu()}
-          className="cursor-pointer md:hidden p-1 border-2 border-neutral-200 rounded-md dark:border-neutral-600 "
         >
           {isMobileMenuOpen ? <LuX size={20} /> : <LuMenu size={20} />}
-        </button>
+        </Button>
       </div>
     </nav>
+  );
+};
+
+const Logo = () => {
+  return (
+    <div className="flex items-center gap-2 font-Inter font-bold text-lg text-zinc-950 dark:text-zinc-50">
+      <img src={viteLogo} alt="EasyBuy" className="w-5" />
+      EasyBuy
+    </div>
   );
 };
 

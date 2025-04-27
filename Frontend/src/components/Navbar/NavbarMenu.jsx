@@ -26,16 +26,18 @@ const NavbarMenu = () => {
   const navLinks = getLinks();
   return (
     <>
+      {/* Desktop */}
       <div className="hidden md:flex gap-6 items-center">
         {navLinks.map((item) => (
           <NavLinkItem key={item.id} to={item.path} text={item.text} />
         ))}
       </div>
 
+      {/* Mobile */}
       <div
-        className={`md:hidden fixed top-20 right-0 w-60 min-h-10 p-5 bg-neutral-100 dark:bg-neutral-800 transform transition-transform duration-300 z-50 
-          ${isMobileMenuOpen ? "-translate-x-1.5" : "translate-x-full"} 
-          flex flex-col space-y-4 border border-neutral-200 rounded-sm`}
+        className={`md:hidden fixed top-16 right-0 w-60 p-5 flex flex-col space-y-4 rounded-md bg-zinc-100/30 dark:bg-zinc-800/30 border border-zinc-200/50 dark:border-zinc-800/50 backdrop-blur-md transform transition-transform duration-300 z-50 ${
+          isMobileMenuOpen ? "-translate-x-1.5" : "translate-x-full"
+        }`}
       >
         {navLinks.map((item) => (
           <NavLinkItem key={item.id} to={item.path} text={item.text} />
@@ -49,7 +51,7 @@ const NavLinkItem = ({ to, text }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `font-Inter font-medium text-md text-neutral-950 dark:text-neutral-100 ${
+      `font-Inter font-medium text-md text-zinc-950 dark:text-zinc-50 ${
         isActive ? "text-blue-600" : ""
       }`
     }
