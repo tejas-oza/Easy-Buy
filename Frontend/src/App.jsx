@@ -1,18 +1,21 @@
 import { useSelector } from "react-redux";
+import { Route, Routes } from "react-router";
 import NavbarContainer from "./components/Navbar/NavbarContainer";
-import Container from "./components/ui/Container";
+import AuthPage from "./pages/AuthPage/AuthPage";
 
 function App() {
   const isDarkMode = useSelector((state) => state.global.isDarkMode);
 
   return (
     <>
-      <Container
-        as="header"
-        className={`${isDarkMode && "dark"} dark:bg-zinc-950 `}
-      >
+      <section className={`${isDarkMode && "dark"} relative`}>
         <NavbarContainer />
-      </Container>
+
+        <Routes>
+          <Route path="/register" element={<AuthPage />} />
+          <Route path="/login" element={<AuthPage type={true} />} />
+        </Routes>
+      </section>
     </>
   );
 }
