@@ -11,15 +11,15 @@ const Navbar = ({
   isMobileMenuOpen,
 }) => {
   return (
-    <nav className="w-full flex items-center justify-between shadow px-5 py-3 bg-white dark:bg-zinc-950 fixed top-0  dark:border-b dark:border-b-zinc-800">
+    <nav className="w-full flex items-center justify-between shadow px-5 py-3 bg-white dark:bg-zinc-950 dark:border-b dark:border-b-zinc-800 z-50 sticky top-0">
       <Logo />
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-5">
         <NavbarMenu />
 
         <Button
           className={"shadow-none"}
-          variant={"base"}
+          variant={"ghost"}
           size={"icon"}
           onClick={() => handleDarkMode()}
         >
@@ -28,7 +28,7 @@ const Navbar = ({
 
         <Button
           className={"shadow-none md:hidden"}
-          variant={"base"}
+          variant={"ghost"}
           size={"icon"}
           onClick={() => handleMobileMenu()}
         >

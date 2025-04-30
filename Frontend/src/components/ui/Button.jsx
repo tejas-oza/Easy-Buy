@@ -3,7 +3,7 @@ import { cn } from "../../lib/utils.js";
 
 const Button = ({ children, className, variant, size, ...props }) => {
   const variantProp = {
-    base: "bg-white dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800 shadow",
+    base: "bg-zinc-950 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-950 hover:bg-zinc-900 dark:hover:bg-zinc-200 shadow",
     destructive:
       "bg-red-600 dark:bg-red-700 text-zinc-50 hover:bg-red-700 dark:hover:bg-red-800 shadow-sm",
     outline:
