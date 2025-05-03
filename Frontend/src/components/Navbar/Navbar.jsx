@@ -1,8 +1,8 @@
 import React from "react";
-import { LuMenu, LuMoon, LuSunMedium, LuX } from "react-icons/lu";
-import NavbarMenu from "./NavbarMenu";
 import Button from "../ui/Button";
-import viteLogo from "../../assets/vite.svg";
+import NavbarMenu from "../Navbar/NavbarMenu";
+import reactLogo from "../../assets/react.svg";
+import { LuMenu, LuMoon, LuSunMedium, LuX } from "react-icons/lu";
 
 const Navbar = ({
   handleDarkMode,
@@ -11,39 +11,40 @@ const Navbar = ({
   isMobileMenuOpen,
 }) => {
   return (
-    <nav className="w-full flex items-center justify-between shadow px-5 py-3 bg-white dark:bg-zinc-950 dark:border-b dark:border-b-zinc-800 z-50 sticky top-0">
-      <Logo />
+    <nav className="w-full flex items-center justify-between md:justify-around px-4 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 fixed top-0 z-50">
+      <NavLogo />
 
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-2">
         <NavbarMenu />
 
         <Button
-          className={"shadow-none"}
           variant={"ghost"}
           size={"icon"}
           onClick={() => handleDarkMode()}
         >
-          {isDarkMode ? <LuMoon size={20} /> : <LuSunMedium size={20} />}
+          {isDarkMode ? <LuMoon /> : <LuSunMedium />}
         </Button>
 
         <Button
-          className={"shadow-none md:hidden"}
           variant={"ghost"}
           size={"icon"}
           onClick={() => handleMobileMenu()}
+          className={"min-md:hidden"}
         >
-          {isMobileMenuOpen ? <LuX size={20} /> : <LuMenu size={20} />}
+          {isMobileMenuOpen ? <LuX /> : <LuMenu />}
         </Button>
       </div>
     </nav>
   );
 };
 
-const Logo = () => {
+const NavLogo = () => {
   return (
-    <div className="flex items-center gap-2 font-Inter font-bold text-lg text-zinc-950 dark:text-zinc-50">
-      <img src={viteLogo} alt="EasyBuy" className="w-5" />
-      EasyBuy
+    <div className="flex items-center gap-2">
+      <img src={reactLogo} alt="EasyBuy" className="w-8" />
+      <h3 className="font-Inter font-bold text-xl text-zinc-950 dark:text-zinc-50">
+        EasyBuy
+      </h3>
     </div>
   );
 };

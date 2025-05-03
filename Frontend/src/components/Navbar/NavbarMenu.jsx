@@ -1,7 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router";
-
 import {
   AUTHENTICATED_NAV_LINKS,
   NAV_LINKS,
@@ -10,54 +9,57 @@ import {
 
 const NavbarMenu = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const role = useSelector((state) => state.auth?.user?.role || "guest");
+  const user = useSelector((state) => state.auth.user);
   const isMobileMenuOpen = useSelector(
     (state) => state.global.isMobileMenuOpen
   );
 
-  const getLinks = () => {
-    let baseLinks = NAV_LINKS;
-    let authLinks = isAuthenticated
-      ? AUTHENTICATED_NAV_LINKS[role] || []
+  const getNavItems = () => {
+    let BaseLinks = NAV_LINKS;
+    let OtherNavLinks = isAuthenticated
+      ? AUTHENTICATED_NAV_LINKS[user?.role]
       : UNAUTHENTICATED_NAV_LINKS;
-    return [...baseLinks, ...authLinks];
+
+    return [...BaseLinks, ...OtherNavLinks];
   };
 
-  const navLinks = getLinks();
+  const navLinksItems = getNavItems();
+
   return (
     <>
-      {/* Desktop */}
-      <div className="hidden md:flex gap-6 items-center">
-        {navLinks.map((item) => (
-          <NavLinkItem key={item.id} to={item.path} text={item.text} />
+      <div className="flex items-center gap-4 max-md:hidden">
+        {navLinksItems.map((item) => (
+          <NavItem key={item?.id} to={item?.path} text={item?.text} />
         ))}
       </div>
 
-      {/* Mobile */}
+      {/* Mobile menu */}
       <div
-        className={`md:hidden fixed top-16 right-0 w-60 p-5 flex flex-col space-y-4 rounded-md bg-zinc-100/30 dark:bg-zinc-800/30 border border-zinc-200/50 dark:border-zinc-800/50 backdrop-blur-md transform transition-transform duration-300 z-50 ${
+        className={`md:hidden w-40 p-5 border border-zinc-300 dark:border-zinc-700 rounded-sm flex flex-col gap-4 bg-zinc-100/30 dark:bg-zinc-800/30 backdrop-blur-lg absolute top-16 right-0 transform transition-transform z-50 ${
           isMobileMenuOpen ? "-translate-x-1.5" : "translate-x-full"
         }`}
       >
-        {navLinks.map((item) => (
-          <NavLinkItem key={item.id} to={item.path} text={item.text} />
+        {navLinksItems.map((item) => (
+          <NavItem key={item?.id} to={item?.path} text={item?.text} />
         ))}
       </div>
     </>
   );
 };
 
-const NavLinkItem = ({ to, text }) => (
-  <NavLink
-    to={to}
-    className={({ isActive }) =>
-      `font-Inter font-medium text-md text-zinc-950 dark:text-zinc-50 ${
-        isActive ? "text-blue-600" : ""
-      }`
-    }
-  >
-    {text}
-  </NavLink>
-);
+const NavItem = ({ to, text }) => {
+  return (
+    <>
+      <NavLink
+        className={
+          "font-Inter font-medium text-sm text-zinc-950 dark:text-zinc-50"
+        }
+        to={to}
+      >
+        {text}
+      </NavLink>
+    </>
+  );
+};
 
 export default NavbarMenu;
