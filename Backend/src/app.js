@@ -18,11 +18,9 @@ app.use("/api/v1/users/register", authRateLimiter);
 
 // security middleware
 
-console.log("env file", process.env.CORS_ORIGIN);
-
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
     credentials: true,
   })
 );

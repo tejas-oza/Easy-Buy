@@ -1,13 +1,12 @@
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
+import { app } from "./app.js";
 import { ApiResponse } from "./utils/ApiResponse.js";
 import { expireCouponsCron } from "./utils/expireCoupons.cron.js";
 
 dotenv.config({
   path: "./.env",
 });
-
-import { app } from "./app.js";
 
 const PORT = process.env.PORT || 4000;
 
