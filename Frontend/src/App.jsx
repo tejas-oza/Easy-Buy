@@ -14,7 +14,7 @@ const App = () => {
     >
       <NavbarContainer />
 
-      <main className="flex-1">Main content</main>
+      <main className="flex-1 dark:bg-zinc-900">Main content</main>
 
       <Footer />
     </section>
