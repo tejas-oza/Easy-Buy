@@ -5,6 +5,7 @@ const Button = ({ children, className, variant, ...props }) => {
     primary: `bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-50 text-zinc-50 dark:text-zinc-900 rounded-md`,
     secondary: `bg-zinc-200 hover:bg-zinc-100 dark:bg-zinc-600 dark:hover:bg-zinc-400 text-zinc-900 dark:text-zinc-50 rounded-md`,
     outlined: `border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-50 rounded-md`,
+    ghost: `hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-50 rounded-md`,
   };
   return (
     <button
