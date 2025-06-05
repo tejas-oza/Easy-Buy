@@ -1,7 +1,7 @@
 import React from "react";
 import Navbar from "./Navbar";
 import { useDispatch, useSelector } from "react-redux";
-import { authenticatedLinks, unAuthenticatedLinks } from "./navbar.data";
+import { authenticatedLinks, commonLinks } from "./navbar.data";
 import { toggleDarkMode, toggleNavBar } from "../../store/features/globalSlice";
 
 const NavbarContainer = () => {
@@ -21,7 +21,7 @@ const NavbarContainer = () => {
   return (
     <Navbar
       authLinks={
-        user !== null ? authenticatedLinks["customer"] : unAuthenticatedLinks
+        user !== null && [...commonLinks, ...authenticatedLinks["customer"]]
       }
       isAuthenticated={user !== null}
       handleNavbar={handleNavbar}

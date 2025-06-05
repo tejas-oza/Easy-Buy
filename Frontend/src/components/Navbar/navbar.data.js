@@ -9,16 +9,6 @@ export const commonLinks = [
     path: "/products",
     label: "Shop",
   },
-  {
-    id: 2,
-    path: "/about",
-    label: "About us",
-  },
-  {
-    id: 3,
-    path: "/contact",
-    label: "Contact us",
-  },
 ];
 
 export const unAuthenticatedLinks = [
@@ -36,15 +26,16 @@ export const unAuthenticatedLinks = [
 export const authenticatedLinks = {
   customer: [
     {
-      id: 12,
-      path: "/cart",
-      label: "Cart",
-    },
-    {
       id: 142,
       path: "/wishlist",
       label: "Wishlist",
     },
+    {
+      id: 12,
+      path: "/cart",
+      label: "Cart",
+    },
+
     {
       id: 44,
       path: "/orders",

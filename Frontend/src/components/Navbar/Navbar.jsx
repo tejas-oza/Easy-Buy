@@ -1,91 +1,80 @@
 import React from "react";
 import { NavLink } from "react-router";
 import Button from "../ui/Button";
-import { LuBox, LuMenu, LuSunMedium, LuUser, LuX } from "react-icons/lu";
+
+import {
+  LuBox,
+  LuMenu,
+  LuSearch,
+  LuSunMedium,
+  LuUser,
+  LuX,
+} from "react-icons/lu";
 
 const Navbar = ({
   handleNavbar,
   isNavbarOpen,
-  authLinks,
   isAuthenticated,
+  authLinks,
   handleDarkMode,
 }) => {
   return (
-    <nav className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-zinc-900 border-b border-b-zinc-200 dark:border-b-zinc-800 sticky top-0">
-      <div className="flex items-center gap-2">
-        <LuBox strokeWidth={3} size={20} className="dark:text-white" />
-        <p className="font-lora font-bold dark:font-medium text-zinc-900 dark:text-white text-lg">
+    <nav className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-zinc-900 border-b border-b-zinc-100 dark:border-b-zinc-800 sticky top-0">
+      <div className="flex items-center gap-3">
+        <h1 className="font-lora font-bold text-lg text-zinc-900 dark:text-zinc-50">
           EasyBuy
-        </p>
+        </h1>
       </div>
 
       <div className="flex items-center gap-3">
         {/* mobile menu */}
-
-        {/* mobile navbar */}
-        <div
-          className={`absolute top-0 right-0 w-56 h-svh flex flex-col gap-2 px-5 py-3 bg-zinc-200/30 dark:bg-zinc-800/30 backdrop-blur-sm border-l border-l-zinc-200 dark:border-l-zinc-600 z-50 transform ${
-            isNavbarOpen ? "translate-x-0" : "translate-x-100"
-          } transition-transform duration-500 md:hidden`}
-        >
-          <div className="flex items-center justify-end mb-3">
-            <Button
-              variant={"outlined"}
-              className={`px-1.5 py-1.5 rounded-sm md:hidden `}
-              onClick={() => handleNavbar()}
-            >
-              <LuX size={19} />
-            </Button>
-          </div>
-
-          {authLinks.map((link) => (
-            <NavLink
-              key={link?.id}
-              to={link?.path}
-              className={`font-inter font-medium text-base md:text-sm text-zinc-900 dark:text-zinc-50`}
-            >
-              {link?.label}
-            </NavLink>
-          ))}
-        </div>
-
-        {/* desktop navbar */}
-        <div className="flex items-center gap-3 max-md:hidden">
-          {authLinks.map((link) => (
-            <NavLink
-              key={link?.id}
-              to={link?.path}
-              className={`font-inter font-semibold text-sm text-zinc-600`}
-            >
-              {link?.label}
-            </NavLink>
-          ))}
-        </div>
-
-        {isAuthenticated && (
-          <Button
-            variant={"outlined"}
-            className={`p-1.5 rounded-full flex items-center justify-center`}
-          >
-            <LuUser />
-          </Button>
-        )}
-
         <Button
           variant={"ghost"}
-          className={`px-1.5 py-1.5 rounded-sm`}
-          onClick={() => handleDarkMode()}
+          onClick={() => handleNavbar()}
+          className={`lg:hidden`}
         >
+          <LuMenu />
+        </Button>
+        <div
+          className={`absolute top-0 right-0 h-svh w-56 lg:hidden p-5 flex flex-col gap-3 bg-zinc-100 border-l border-l-zinc-200 dark:bg-zinc-800 transform transition duration-300 ${
+            isNavbarOpen ? "translate-x-0" : "translate-x-100"
+          }`}
+        >
+          <Button
+            variant={"outlined"}
+            onClick={() => handleNavbar()}
+            className={`lg:hidden w-max absolute top-5 right-5`}
+          >
+            <LuX />
+          </Button>
+          {authLinks?.map((item) => (
+            <NavLink
+              key={item?.id}
+              to={item?.path}
+              className={`font-inter font-medium dark:font-normal text-base text-zinc-900 dark:text-zinc-50 w-max`}
+            >
+              {item?.label}
+            </NavLink>
+          ))}
+        </div>
+
+        {/* desktop menu */}
+        <div className="flex items-center gap-3 max-lg:hidden">
+          {authLinks?.map((item) => (
+            <NavLink
+              key={item?.id}
+              to={item?.path}
+              className={`font-inter font-medium dark:font-normal text-base text-zinc-900 dark:text-zinc-50`}
+            >
+              {item?.label}
+            </NavLink>
+          ))}
+        </div>
+        <Button variant={"ghost"} onClick={() => handleDarkMode()}>
           <LuSunMedium />
         </Button>
 
-        <Button
-          variant={"ghost"}
-          className={`px-1.5 py-1.5 rounded-sm md:hidden`}
-          onClick={() => handleNavbar()}
-        >
-          <LuMenu size={19} />
-        </Button>
+        {/* Profile menu */}
       </div>
     </nav>
   );
